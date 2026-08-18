@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 /**
  * Çakışma kontrolü için yardımcı sınıf (henüz servis katmanında kullanılmıyor).
- * Kural: A1 <= B2 VE B1 <= A2 (proje dokümanı m.5)
+ * Kural: A1 <= B2 VE B1 <= A2
  */
 public record DateRange(LocalDate baslangicTarihi, LocalDate bitisTarihi) {
 
