@@ -1,0 +1,7 @@
+CREATE TABLE araclar (
+    id BIGSERIAL PRIMARY KEY,
+    plaka VARCHAR(20) NOT NULL UNIQUE,
+    marka_model VARCHAR(100) NOT NULL,
+    tur VARCHAR(20) NOT NULL,
+    durum VARCHAR(20) NOT NULL
+);
