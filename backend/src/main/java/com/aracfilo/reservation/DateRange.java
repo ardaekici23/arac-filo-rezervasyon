@@ -3,7 +3,7 @@ package com.aracfilo.reservation;
 import java.time.LocalDate;
 
 /**
- * Çakışma kontrolü için yardımcı sınıf (henüz servis katmanında kullanılmıyor).
+ * Çakışma kontrolü için yardımcı sınıf ({@link ReservationService#create} tarafından kullanılır).
  * Kural: A1 <= B2 VE B1 <= A2
  */
 public record DateRange(LocalDate baslangicTarihi, LocalDate bitisTarihi) {

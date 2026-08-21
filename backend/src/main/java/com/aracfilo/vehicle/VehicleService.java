@@ -1,6 +1,9 @@
 package com.aracfilo.vehicle;
 
 import com.aracfilo.common.NotFoundException;
+import com.aracfilo.reservation.ReservationRepository;
+import com.aracfilo.reservation.ReservationStatus;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -8,13 +11,22 @@ import org.springframework.stereotype.Service;
 public class VehicleService {
 
     private final VehicleRepository vehicleRepository;
+    private final ReservationRepository reservationRepository;
 
-    public VehicleService(VehicleRepository vehicleRepository) {
+    public VehicleService(VehicleRepository vehicleRepository, ReservationRepository reservationRepository) {
         this.vehicleRepository = vehicleRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<Vehicle> listAll() {
         return vehicleRepository.findAll();
+    }
+
+    public List<Vehicle> listMusait(LocalDate baslangic, LocalDate bitis) {
+        List<Long> doluAracIdler = reservationRepository.findCakisanAracIdler(baslangic, bitis, ReservationStatus.IPTAL);
+        return vehicleRepository.findAll().stream()
+                .filter(vehicle -> !doluAracIdler.contains(vehicle.getId()))
+                .toList();
     }
 
     public Vehicle findById(Long id) {

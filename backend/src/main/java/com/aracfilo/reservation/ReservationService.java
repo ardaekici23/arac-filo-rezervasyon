@@ -1,5 +1,6 @@
 package com.aracfilo.reservation;
 
+import com.aracfilo.common.BusinessRuleException;
 import com.aracfilo.common.NotFoundException;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,19 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("Rezervasyon bulunamadı: " + id));
     }
 
-    // TODO: kayıt öncesi findByAracIdAndDurumNot + DateRange.overlaps ile çakışma kontrolü eklenecek (sonraki session)
     public Reservation create(Reservation reservation) {
+        DateRange yeniAralik = new DateRange(reservation.getBaslangicTarihi(), reservation.getBitisTarihi());
+        List<Reservation> digerRezervasyonlar =
+                reservationRepository.findByAracIdAndDurumNot(reservation.getAracId(), ReservationStatus.IPTAL);
+
+        boolean cakisiyor = digerRezervasyonlar.stream()
+                .map(r -> new DateRange(r.getBaslangicTarihi(), r.getBitisTarihi()))
+                .anyMatch(yeniAralik::overlaps);
+
+        if (cakisiyor) {
+            throw new BusinessRuleException("Bu araç seçilen tarih aralığında zaten rezerve edilmiş");
+        }
+
         return reservationRepository.save(reservation);
     }
 }
