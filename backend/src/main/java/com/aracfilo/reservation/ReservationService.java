@@ -38,4 +38,10 @@ public class ReservationService {
 
         return reservationRepository.save(reservation);
     }
+
+    public Reservation updateStatus(Long id, ReservationStatus durum) {
+        Reservation reservation = findById(id);
+        reservation.setDurum(durum);
+        return reservationRepository.save(reservation);
+    }
 }

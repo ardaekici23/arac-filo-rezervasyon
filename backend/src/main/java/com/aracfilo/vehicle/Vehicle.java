@@ -31,15 +31,19 @@ public class Vehicle {
     @Column(name = "durum", nullable = false)
     private VehicleStatus durum;
 
+    @Column(name = "foto_url")
+    private String fotoUrl;
+
     protected Vehicle() {
         // JPA
     }
 
-    public Vehicle(String plaka, String markaModel, VehicleType tur, VehicleStatus durum) {
+    public Vehicle(String plaka, String markaModel, VehicleType tur, VehicleStatus durum, String fotoUrl) {
         this.plaka = plaka;
         this.markaModel = markaModel;
         this.tur = tur;
         this.durum = durum;
+        this.fotoUrl = fotoUrl;
     }
 
     public Long getId() {
@@ -76,5 +80,13 @@ public class Vehicle {
 
     public void setDurum(VehicleStatus durum) {
         this.durum = durum;
+    }
+
+    public String getFotoUrl() {
+        return fotoUrl;
+    }
+
+    public void setFotoUrl(String fotoUrl) {
+        this.fotoUrl = fotoUrl;
     }
 }

@@ -44,6 +44,7 @@ public class VehicleService {
         existing.setMarkaModel(changes.getMarkaModel());
         existing.setTur(changes.getTur());
         existing.setDurum(changes.getDurum());
+        existing.setFotoUrl(changes.getFotoUrl());
         return vehicleRepository.save(existing);
     }
 

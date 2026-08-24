@@ -6,5 +6,6 @@ public record VehicleRequest(
         @NotBlank String plaka,
         @NotBlank String markaModel,
         @NotBlank String tur,
-        @NotBlank String durum) {
+        @NotBlank String durum,
+        String fotoUrl) {
 }

@@ -62,7 +62,8 @@ public class VehicleController {
                 request.plaka(),
                 request.markaModel(),
                 VehicleType.valueOf(request.tur()),
-                VehicleStatus.valueOf(request.durum()));
+                VehicleStatus.valueOf(request.durum()),
+                request.fotoUrl());
     }
 
     private VehicleResponse toResponse(Vehicle vehicle) {
@@ -71,6 +72,7 @@ public class VehicleController {
                 vehicle.getPlaka(),
                 vehicle.getMarkaModel(),
                 vehicle.getTur().name(),
-                vehicle.getDurum().name());
+                vehicle.getDurum().name(),
+                vehicle.getFotoUrl());
     }
 }

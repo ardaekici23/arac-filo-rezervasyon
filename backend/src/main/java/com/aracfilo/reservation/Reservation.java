@@ -91,4 +91,8 @@ public class Reservation {
     public LocalDateTime getOlusturmaTarihi() {
         return olusturmaTarihi;
     }
+
+    public void setDurum(ReservationStatus durum) {
+        this.durum = durum;
+    }
 }
