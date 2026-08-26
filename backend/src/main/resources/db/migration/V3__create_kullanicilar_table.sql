@@ -1,0 +1,7 @@
+CREATE TABLE kullanicilar (
+    id BIGSERIAL PRIMARY KEY,
+    ad VARCHAR(100) NOT NULL,
+    eposta VARCHAR(255) NOT NULL UNIQUE,
+    rol VARCHAR(20) NOT NULL,
+    olusturma_tarihi TIMESTAMP NOT NULL DEFAULT now()
+);

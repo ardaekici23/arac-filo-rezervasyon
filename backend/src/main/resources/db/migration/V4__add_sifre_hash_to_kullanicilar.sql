@@ -1,0 +1,2 @@
+ALTER TABLE kullanicilar ADD COLUMN sifre_hash VARCHAR(100) NOT NULL DEFAULT '';
+ALTER TABLE kullanicilar ALTER COLUMN sifre_hash DROP DEFAULT;
