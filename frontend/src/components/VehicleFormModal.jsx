@@ -3,17 +3,28 @@ import { useToast } from '../context/ToastContext';
 import { useFleetData } from '../context/FleetDataContext';
 import { vehiclesApi } from '../api/vehicles';
 import { ApiError } from '../api/client';
+import { MARKALAR, YILLAR, markaModelAyristir, modelSecenekleriGetir } from '../domain/vehicleCatalog';
 
-const BOS_FORM = { plaka: '', markaModel: '', tur: 'BINEK', durum: 'AKTIF', fotoUrl: '' };
+const BOS_FORM = { plaka: '', marka: '', model: '', yil: '', tur: 'BINEK', durum: 'AKTIF', fotoUrl: '' };
 const MAX_FOTO_BYTE = 4 * 1024 * 1024;
+
+function formaCevir(arac) {
+  if (!arac) return { ...BOS_FORM };
+  const { marka, model } = markaModelAyristir(arac.markaModel);
+  return { ...BOS_FORM, ...arac, marka, model };
+}
 
 export default function VehicleFormModal({ arac, onClose }) {
   const { duyur } = useToast();
   const { veriYukle } = useFleetData();
-  const [form, setForm] = useState(arac ? { ...BOS_FORM, ...arac } : { ...BOS_FORM });
+  const [form, setForm] = useState(() => formaCevir(arac));
   const [kaydediliyor, setKaydediliyor] = useState(false);
 
   const alan = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const markaAlan = (e) => setForm((f) => ({ ...f, marka: e.target.value, model: '' }));
+
+  const modelSecenekleri = modelSecenekleriGetir(form.marka, form.model);
 
   const fotoDosyaSec = (e) => {
     const dosya = e.target.files && e.target.files[0];
@@ -31,17 +42,18 @@ export default function VehicleFormModal({ arac, onClose }) {
   const fotoKaldir = () => setForm((f) => ({ ...f, fotoUrl: '' }));
 
   const kaydet = async () => {
-    if (!form.plaka.trim() || !form.markaModel.trim()) {
-      duyur('Plaka ve marka/model zorunlu.', 'hata');
+    if (!form.plaka.trim() || !form.marka || !form.model) {
+      duyur('Plaka, marka ve model zorunlu.', 'hata');
       return;
     }
     setKaydediliyor(true);
     const govde = {
       plaka: form.plaka.trim(),
-      markaModel: form.markaModel.trim(),
+      markaModel: `${form.marka} ${form.model}`.trim(),
       tur: form.tur,
       durum: form.durum,
       fotoUrl: form.fotoUrl || '',
+      yil: form.yil ? Number(form.yil) : null,
     };
     try {
       if (arac) await vehiclesApi.update(arac.id, govde);
@@ -61,11 +73,47 @@ export default function VehicleFormModal({ arac, onClose }) {
       <div className="modal modal-narrow" onClick={(e) => e.stopPropagation()}>
         <div className="modal-title">{arac ? 'Aracı düzenle' : 'Yeni araç'}</div>
 
-        <label className="field-label field-label-top">Plaka</label>
-        <input className="text-input" value={form.plaka} onChange={alan('plaka')} placeholder="34 ABC 123" />
+        <div className="form-grid-2">
+          <div>
+            <label className="field-label field-label-top">Plaka</label>
+            <input className="text-input" value={form.plaka} onChange={alan('plaka')} placeholder="34 ABC 123" />
+          </div>
+          <div>
+            <label className="field-label field-label-top">Yıl</label>
+            <select className="select-input select-block" value={form.yil} onChange={alan('yil')}>
+              <option value="">Seçiniz</option>
+              {YILLAR.map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
+        </div>
 
-        <label className="field-label field-label-top">Marka / Model</label>
-        <input className="text-input" value={form.markaModel} onChange={alan('markaModel')} placeholder="Volkswagen Passat" />
+        <div className="form-grid-2">
+          <div>
+            <label className="field-label field-label-top">Marka</label>
+            <select className="select-input select-block" value={form.marka} onChange={markaAlan}>
+              <option value="">Seçiniz</option>
+              {MARKALAR.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="field-label field-label-top">Model</label>
+            <select
+              className="select-input select-block"
+              value={form.model}
+              onChange={alan('model')}
+              disabled={!form.marka}
+            >
+              <option value="">{form.marka ? 'Seçiniz' : 'Önce marka seçin'}</option>
+              {modelSecenekleri.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+          </div>
+        </div>
 
         <div className="form-grid-2">
           <div>

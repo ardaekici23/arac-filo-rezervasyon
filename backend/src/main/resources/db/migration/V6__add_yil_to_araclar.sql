@@ -1,0 +1,1 @@
+ALTER TABLE araclar ADD COLUMN yil INTEGER;

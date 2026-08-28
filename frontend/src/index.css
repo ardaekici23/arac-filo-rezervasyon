@@ -129,6 +129,7 @@ button, input, select, textarea { font-family: inherit; }
   padding: 11px 14px; border: 1px solid #DDE0E8; border-radius: 10px; background: #fff; font-size: 14px; color: var(--ink);
 }
 .text-input { width: 100%; }
+.select-input:disabled { background: #F3F4F7; color: #9AA0AE; cursor: not-allowed; }
 .text-input:focus, .select-input:focus, .text-area:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(31,79,216,0.12); }
 .select-block { width: 100%; }
 .text-area { width: 100%; min-height: 68px; resize: vertical; }

@@ -6,5 +6,6 @@ public record VehicleResponse(
         String markaModel,
         String tur,
         String durum,
-        String fotoUrl) {
+        String fotoUrl,
+        Integer yil) {
 }

@@ -45,6 +45,7 @@ public class VehicleService {
         existing.setTur(changes.getTur());
         existing.setDurum(changes.getDurum());
         existing.setFotoUrl(changes.getFotoUrl());
+        existing.setYil(changes.getYil());
         return vehicleRepository.save(existing);
     }
 

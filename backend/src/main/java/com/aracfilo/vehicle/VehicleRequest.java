@@ -7,5 +7,6 @@ public record VehicleRequest(
         @NotBlank String markaModel,
         @NotBlank String tur,
         @NotBlank String durum,
-        String fotoUrl) {
+        String fotoUrl,
+        Integer yil) {
 }
