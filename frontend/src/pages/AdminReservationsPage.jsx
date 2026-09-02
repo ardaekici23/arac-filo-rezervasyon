@@ -3,6 +3,7 @@ import { useFleetData } from '../context/FleetDataContext';
 import { useToast } from '../context/ToastContext';
 import { reservationsApi } from '../api/reservations';
 import { ApiError } from '../api/client';
+import ReservationDetailModal from '../components/ReservationDetailModal';
 import { RESERVATION_STATUS_CLASS, RESERVATION_STATUS_LABEL } from '../domain/constants';
 import { gunFarki, trTarih } from '../domain/dates';
 
@@ -17,6 +18,7 @@ export default function AdminReservationsPage() {
   const { araclar, rezervasyonlar, veriYukle } = useFleetData();
   const { duyur } = useToast();
   const [sekme, setSekme] = useState('BEKLEMEDE');
+  const [detayId, setDetayId] = useState(null);
 
   const arac = (id) => araclar.find((v) => v.id === id) || null;
 
@@ -35,6 +37,8 @@ export default function AdminReservationsPage() {
       duyur(e instanceof ApiError ? e.message : 'Sunucuya ulaşılamadı.', 'hata');
     }
   };
+
+  const detayRezervasyon = detayId != null ? rezervasyonlar.find((r) => r.id === detayId) || null : null;
 
   return (
     <div className="page">
@@ -59,7 +63,11 @@ export default function AdminReservationsPage() {
         {filtreli.map((r) => {
           const v = arac(r.aracId);
           return (
-            <div key={r.id} className="table-row admin-res-cols">
+            <div
+              key={r.id}
+              className="table-row admin-res-cols reservation-row-clickable"
+              onClick={() => setDetayId(r.id)}
+            >
               <div>
                 <div className="row-strong">{r.kullaniciAdi}</div>
                 <div className="row-sub">{v ? v.markaModel : 'Silinmiş araç'}</div>
@@ -71,12 +79,12 @@ export default function AdminReservationsPage() {
               <div className="row-actions align-right">
                 {r.durum === 'BEKLEMEDE' && (
                   <>
-                    <button type="button" className="btn btn-success btn-sm" onClick={() => durumDegistir(r.id, 'ONAYLANDI')}>Onayla</button>
-                    <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => durumDegistir(r.id, 'IPTAL')}>İptal</button>
+                    <button type="button" className="btn btn-success btn-sm" onClick={(e) => { e.stopPropagation(); durumDegistir(r.id, 'ONAYLANDI'); }}>Onayla</button>
+                    <button type="button" className="btn btn-outline-danger btn-sm" onClick={(e) => { e.stopPropagation(); durumDegistir(r.id, 'IPTAL'); }}>İptal</button>
                   </>
                 )}
                 {r.durum === 'ONAYLANDI' && (
-                  <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => durumDegistir(r.id, 'IPTAL')}>İptal</button>
+                  <button type="button" className="btn btn-outline-danger btn-sm" onClick={(e) => { e.stopPropagation(); durumDegistir(r.id, 'IPTAL'); }}>İptal</button>
                 )}
               </div>
             </div>
@@ -84,6 +92,18 @@ export default function AdminReservationsPage() {
         })}
         {filtreli.length === 0 && <div className="empty-note empty-note-center">Bu sekmede kayıt yok.</div>}
       </div>
+
+      {detayRezervasyon && (
+        <ReservationDetailModal
+          rezervasyon={detayRezervasyon}
+          arac={arac(detayRezervasyon.aracId)}
+          onaylanabilir={detayRezervasyon.durum === 'BEKLEMEDE'}
+          iptalEdilebilir={detayRezervasyon.durum === 'BEKLEMEDE' || detayRezervasyon.durum === 'ONAYLANDI'}
+          onOnayla={() => { durumDegistir(detayRezervasyon.id, 'ONAYLANDI'); setDetayId(null); }}
+          onIptal={() => { durumDegistir(detayRezervasyon.id, 'IPTAL'); setDetayId(null); }}
+          onClose={() => setDetayId(null)}
+        />
+      )}
     </div>
   );
 }

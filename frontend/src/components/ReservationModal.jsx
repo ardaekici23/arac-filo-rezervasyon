@@ -9,7 +9,7 @@ import { doluGunler, aralikTemizMi } from '../domain/occupancy';
 import { gunFarki, trTarih } from '../domain/dates';
 import { RESERVATION_STATUS_CLASS, RESERVATION_STATUS_LABEL, VEHICLE_TYPE_LABEL } from '../domain/constants';
 
-export default function ReservationModal({ arac, onClose }) {
+export default function ReservationModal({ arac, onClose, onCreated }) {
   const { kullanici } = useAuth();
   const { duyur } = useToast();
   const { rezervasyonlar, veriYukle } = useFleetData();
@@ -56,17 +56,21 @@ export default function ReservationModal({ arac, onClose }) {
     if (!secimBas) return;
     setGonderiliyor(true);
     try {
-      await reservationsApi.create({
+      const kayit = await reservationsApi.create({
         aracId: arac.id,
         kullaniciAdi: kullanici.ad,
         baslangicTarihi: secimBas,
         bitisTarihi: secimBit || secimBas,
         amac,
       });
-      duyur('Rezervasyon oluşturuldu.', 'basari');
       await veriYukle();
       temizle();
       setAmac('');
+      onCreated?.({
+        arac: `${arac.markaModel} · ${arac.plaka}`,
+        aralik: `${trTarih(secimBas)} → ${trTarih(secimBit || secimBas)}`,
+        no: kayit?.id,
+      });
     } catch (e) {
       const mesaj = e instanceof ApiError ? e.message : 'Sunucuya ulaşılamadı.';
       duyur(mesaj, 'hata');

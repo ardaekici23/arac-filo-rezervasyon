@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useFleetData } from '../context/FleetDataContext';
 import ReservationModal from '../components/ReservationModal';
+import ReservationSuccessModal from '../components/ReservationSuccessModal';
 import {
   VEHICLE_STATUS_CLASS,
   VEHICLE_STATUS_LABEL,
@@ -54,6 +55,7 @@ export default function VehiclesPage() {
   const { araclar, rezervasyonlar, yukleniyor, hata } = useFleetData();
   const [filtre, setFiltre] = useState(BOS_FILTRE);
   const [seciliArac, setSeciliArac] = useState(null);
+  const [basariEkrani, setBasariEkrani] = useState(null);
 
   const alan = (k) => (e) => setFiltre((f) => ({ ...f, [k]: e.target.value }));
   const coguldegistir = (alanAdi, deger) =>
@@ -330,7 +332,16 @@ export default function VehiclesPage() {
         </div>
       </div>
 
-      {seciliArac && <ReservationModal arac={seciliArac} onClose={() => setSeciliArac(null)} />}
+      {seciliArac && (
+        <ReservationModal
+          arac={seciliArac}
+          onClose={() => setSeciliArac(null)}
+          onCreated={(bilgi) => { setSeciliArac(null); setBasariEkrani(bilgi); }}
+        />
+      )}
+      {basariEkrani && (
+        <ReservationSuccessModal {...basariEkrani} onClose={() => setBasariEkrani(null)} />
+      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useFleetData } from '../context/FleetDataContext';
 import { useToast } from '../context/ToastContext';
 import { reservationsApi } from '../api/reservations';
 import { ApiError } from '../api/client';
+import ReservationDetailModal from '../components/ReservationDetailModal';
 import { RESERVATION_STATUS_CLASS, RESERVATION_STATUS_LABEL } from '../domain/constants';
 import { bugunIso, gunFarki, trTarih } from '../domain/dates';
 
@@ -18,6 +19,7 @@ export default function MyReservationsPage() {
   const { araclar, rezervasyonlar, veriYukle } = useFleetData();
   const { duyur } = useToast();
   const [sekme, setSekme] = useState('aktif');
+  const [detayId, setDetayId] = useState(null);
 
   const arac = (id) => araclar.find((v) => v.id === id) || null;
   const bugun = bugunIso();
@@ -47,6 +49,8 @@ export default function MyReservationsPage() {
     }
   };
 
+  const detayRezervasyon = detayId != null ? benimHam.find((r) => r.id === detayId) || null : null;
+
   return (
     <div className="page">
       <h1 className="page-title">Rezervasyonlarım</h1>
@@ -68,7 +72,11 @@ export default function MyReservationsPage() {
           const v = arac(r.aracId);
           const iptalEdilebilir = r.durum === 'BEKLEMEDE' || r.durum === 'ONAYLANDI';
           return (
-            <div key={r.id} className="card reservation-row">
+            <div
+              key={r.id}
+              className="card reservation-row reservation-row-clickable"
+              onClick={() => setDetayId(r.id)}
+            >
               <div>
                 <div className="row-plate">{v ? v.plaka : '—'}</div>
                 <div className="row-sub">{v ? v.markaModel : 'Silinmiş araç'}</div>
@@ -79,13 +87,30 @@ export default function MyReservationsPage() {
               </div>
               <span className={RESERVATION_STATUS_CLASS[r.durum]}>{RESERVATION_STATUS_LABEL[r.durum]}</span>
               {iptalEdilebilir ? (
-                <button type="button" className="btn btn-outline-danger" onClick={() => iptalEt(r.id)}>İptal et</button>
+                <button
+                  type="button"
+                  className="btn btn-outline-danger"
+                  onClick={(e) => { e.stopPropagation(); iptalEt(r.id); }}
+                >
+                  İptal et
+                </button>
               ) : <span />}
             </div>
           );
         })}
         {benimFiltreli.length === 0 && <div className="empty-note empty-note-center">Bu sekmede kayıt yok.</div>}
       </div>
+
+      {detayRezervasyon && (
+        <ReservationDetailModal
+          rezervasyon={detayRezervasyon}
+          arac={arac(detayRezervasyon.aracId)}
+          onaylanabilir={false}
+          iptalEdilebilir={detayRezervasyon.durum === 'BEKLEMEDE' || detayRezervasyon.durum === 'ONAYLANDI'}
+          onIptal={() => { iptalEt(detayRezervasyon.id); setDetayId(null); }}
+          onClose={() => setDetayId(null)}
+        />
+      )}
     </div>
   );
 }
