@@ -8,5 +8,14 @@ public record VehicleRequest(
         @NotBlank String tur,
         @NotBlank String durum,
         String fotoUrl,
-        Integer yil) {
+        Integer yil,
+        String kategori,
+        Integer koltuk,
+        String yakit,
+        String vites,
+        Integer km,
+        Double sehirTuketim,
+        Double yolTuketim,
+        Integer menzil,
+        Double kwh) {
 }

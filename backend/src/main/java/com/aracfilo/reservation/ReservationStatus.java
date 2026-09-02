@@ -1,8 +1,8 @@
 package com.aracfilo.reservation;
 
 public enum ReservationStatus {
-    PLANLANDI,
-    DEVAM_EDIYOR,
+    BEKLEMEDE,
+    ONAYLANDI,
     TAMAMLANDI,
     IPTAL
 }

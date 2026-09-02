@@ -64,7 +64,16 @@ public class VehicleController {
                 VehicleType.valueOf(request.tur()),
                 VehicleStatus.valueOf(request.durum()),
                 request.fotoUrl(),
-                request.yil());
+                request.yil(),
+                request.kategori() != null ? VehicleCategory.valueOf(request.kategori()) : null,
+                request.koltuk(),
+                request.yakit() != null ? FuelType.valueOf(request.yakit()) : null,
+                request.vites() != null ? Gearbox.valueOf(request.vites()) : null,
+                request.km(),
+                request.sehirTuketim(),
+                request.yolTuketim(),
+                request.menzil(),
+                request.kwh());
     }
 
     private VehicleResponse toResponse(Vehicle vehicle) {
@@ -75,6 +84,15 @@ public class VehicleController {
                 vehicle.getTur().name(),
                 vehicle.getDurum().name(),
                 vehicle.getFotoUrl(),
-                vehicle.getYil());
+                vehicle.getYil(),
+                vehicle.getKategori() != null ? vehicle.getKategori().name() : null,
+                vehicle.getKoltuk(),
+                vehicle.getYakit() != null ? vehicle.getYakit().name() : null,
+                vehicle.getVites() != null ? vehicle.getVites().name() : null,
+                vehicle.getKm(),
+                vehicle.getSehirTuketim(),
+                vehicle.getYolTuketim(),
+                vehicle.getMenzil(),
+                vehicle.getKwh());
     }
 }

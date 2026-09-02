@@ -41,7 +41,7 @@ public class ReservationController {
                 request.baslangicTarihi(),
                 request.bitisTarihi(),
                 request.amac(),
-                ReservationStatus.PLANLANDI,
+                ReservationStatus.BEKLEMEDE,
                 LocalDateTime.now());
         Reservation saved = reservationService.create(reservation);
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(saved));
