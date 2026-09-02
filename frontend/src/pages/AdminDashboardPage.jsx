@@ -15,7 +15,7 @@ export default function AdminDashboardPage() {
 
   const veriler = useMemo(() => {
     const aktifSayi = rezervasyonlar.filter(
-      (r) => (r.durum === 'PLANLANDI' || r.durum === 'DEVAM_EDIYOR') && r.bitisTarihi >= bugun
+      (r) => (r.durum === 'BEKLEMEDE' || r.durum === 'ONAYLANDI') && r.bitisTarihi >= bugun
     ).length;
     const bakimdaki = araclar.filter((v) => v.durum === 'BAKIMDA').length;
 
@@ -36,11 +36,12 @@ export default function AdminDashboardPage() {
       ? Math.round(dolulukSatirlari.reduce((t, d) => t + d.oran, 0) / dolulukSatirlari.length)
       : 0;
 
-    const sonTalepler = [...rezervasyonlar]
+    const onayBekleyenler = rezervasyonlar
+      .filter((r) => r.durum === 'BEKLEMEDE')
       .sort((a, b) => (a.olusturmaTarihi < b.olusturmaTarihi ? 1 : -1))
       .slice(0, 5);
 
-    return { aktifSayi, bakimdaki, dolulukSatirlari, ortalamaDoluluk, sonTalepler };
+    return { aktifSayi, bakimdaki, dolulukSatirlari, ortalamaDoluluk, onayBekleyenler };
   }, [araclar, rezervasyonlar, bugun, today]);
 
   const arac = (id) => araclar.find((v) => v.id === id) || null;
@@ -58,7 +59,7 @@ export default function AdminDashboardPage() {
   const kpiler = [
     { etiket: 'Toplam araç', deger: araclar.length, alt: `${veriler.bakimdaki} tanesi bakımda` },
     { etiket: 'Aktif rezervasyon', deger: veriler.aktifSayi, alt: 'Planlı ve devam eden' },
-    { etiket: 'Devam eden', deger: rezervasyonlar.filter((r) => r.durum === 'DEVAM_EDIYOR').length, alt: 'Şu an yolda' },
+    { etiket: 'Onay bekleyen', deger: rezervasyonlar.filter((r) => r.durum === 'BEKLEMEDE').length, alt: 'İncelemeni bekliyor' },
     { etiket: 'Ortalama doluluk', deger: `%${veriler.ortalamaDoluluk}`, alt: `${AY_ADLARI[today.getMonth()]} ayı` },
   ];
 
@@ -98,9 +99,9 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="card panel">
-          <h2 className="panel-title">Son talepler</h2>
+          <h2 className="panel-title">Onay bekleyenler</h2>
           <div className="request-list">
-            {veriler.sonTalepler.map((r) => {
+            {veriler.onayBekleyenler.map((r) => {
               const v = arac(r.aracId);
               return (
                 <div key={r.id} className="request-card">
@@ -111,20 +112,13 @@ export default function AdminDashboardPage() {
                   <div className="request-range">{trTarih(r.baslangicTarihi)} → {trTarih(r.bitisTarihi)}</div>
                   <div className="request-actions">
                     <span className={RESERVATION_STATUS_CLASS[r.durum]}>{RESERVATION_STATUS_LABEL[r.durum]}</span>
-                    {r.durum === 'PLANLANDI' && (
-                      <>
-                        <button type="button" className="btn btn-success btn-sm" onClick={() => durumDegistir(r.id, 'DEVAM_EDIYOR')}>Başlat</button>
-                        <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => durumDegistir(r.id, 'IPTAL')}>İptal</button>
-                      </>
-                    )}
-                    {r.durum === 'DEVAM_EDIYOR' && (
-                      <button type="button" className="btn btn-success btn-sm" onClick={() => durumDegistir(r.id, 'TAMAMLANDI')}>Tamamla</button>
-                    )}
+                    <button type="button" className="btn btn-success btn-sm" onClick={() => durumDegistir(r.id, 'ONAYLANDI')}>Onayla</button>
+                    <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => durumDegistir(r.id, 'IPTAL')}>Reddet</button>
                   </div>
                 </div>
               );
             })}
-            {veriler.sonTalepler.length === 0 && <div className="empty-note">Kayıt yok.</div>}
+            {veriler.onayBekleyenler.length === 0 && <div className="empty-note">Bekleyen talep yok.</div>}
           </div>
         </div>
       </div>

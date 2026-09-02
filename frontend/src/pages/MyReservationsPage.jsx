@@ -30,7 +30,7 @@ export default function MyReservationsPage() {
   const benimFiltreli = useMemo(() => {
     return benimHam
       .filter((r) => {
-        if (sekme === 'aktif') return (r.durum === 'PLANLANDI' || r.durum === 'DEVAM_EDIYOR') && r.bitisTarihi >= bugun;
+        if (sekme === 'aktif') return (r.durum === 'BEKLEMEDE' || r.durum === 'ONAYLANDI') && r.bitisTarihi >= bugun;
         if (sekme === 'gecmis') return r.durum === 'TAMAMLANDI' || r.bitisTarihi < bugun;
         return r.durum === 'IPTAL';
       })
@@ -66,7 +66,7 @@ export default function MyReservationsPage() {
       <div className="list-col">
         {benimFiltreli.map((r) => {
           const v = arac(r.aracId);
-          const iptalEdilebilir = r.durum === 'PLANLANDI' || r.durum === 'DEVAM_EDIYOR';
+          const iptalEdilebilir = r.durum === 'BEKLEMEDE' || r.durum === 'ONAYLANDI';
           return (
             <div key={r.id} className="card reservation-row">
               <div>

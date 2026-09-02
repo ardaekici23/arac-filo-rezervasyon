@@ -7,9 +7,8 @@ import { RESERVATION_STATUS_CLASS, RESERVATION_STATUS_LABEL } from '../domain/co
 import { gunFarki, trTarih } from '../domain/dates';
 
 const SEKMELER = [
-  { anahtar: 'PLANLANDI', etiket: 'Planlandı' },
-  { anahtar: 'DEVAM_EDIYOR', etiket: 'Devam Ediyor' },
-  { anahtar: 'TAMAMLANDI', etiket: 'Tamamlandı' },
+  { anahtar: 'BEKLEMEDE', etiket: 'Bekleyen' },
+  { anahtar: 'ONAYLANDI', etiket: 'Onaylı' },
   { anahtar: 'IPTAL', etiket: 'İptal' },
   { anahtar: 'TUMU', etiket: 'Tümü' },
 ];
@@ -17,7 +16,7 @@ const SEKMELER = [
 export default function AdminReservationsPage() {
   const { araclar, rezervasyonlar, veriYukle } = useFleetData();
   const { duyur } = useToast();
-  const [sekme, setSekme] = useState('PLANLANDI');
+  const [sekme, setSekme] = useState('BEKLEMEDE');
 
   const arac = (id) => araclar.find((v) => v.id === id) || null;
 
@@ -70,17 +69,14 @@ export default function AdminReservationsPage() {
               <div className="muted-note">{gunFarki(r.baslangicTarihi, r.bitisTarihi)}</div>
               <div><span className={RESERVATION_STATUS_CLASS[r.durum]}>{RESERVATION_STATUS_LABEL[r.durum]}</span></div>
               <div className="row-actions align-right">
-                {r.durum === 'PLANLANDI' && (
+                {r.durum === 'BEKLEMEDE' && (
                   <>
-                    <button type="button" className="btn btn-success btn-sm" onClick={() => durumDegistir(r.id, 'DEVAM_EDIYOR')}>Başlat</button>
+                    <button type="button" className="btn btn-success btn-sm" onClick={() => durumDegistir(r.id, 'ONAYLANDI')}>Onayla</button>
                     <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => durumDegistir(r.id, 'IPTAL')}>İptal</button>
                   </>
                 )}
-                {r.durum === 'DEVAM_EDIYOR' && (
-                  <>
-                    <button type="button" className="btn btn-success btn-sm" onClick={() => durumDegistir(r.id, 'TAMAMLANDI')}>Tamamla</button>
-                    <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => durumDegistir(r.id, 'IPTAL')}>İptal</button>
-                  </>
+                {r.durum === 'ONAYLANDI' && (
+                  <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => durumDegistir(r.id, 'IPTAL')}>İptal</button>
                 )}
               </div>
             </div>

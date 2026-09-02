@@ -31,3 +31,9 @@ export function gunFarki(basIso, bitIso) {
 export function bugunIso() {
   return iso(new Date());
 }
+
+export function haftaBaslangici(date) {
+  const gun = date.getDay();
+  const ofset = gun === 0 ? 6 : gun - 1;
+  return gunEkle(date, -ofset);
+}

@@ -19,7 +19,7 @@ export default function LandingPage() {
   const istatistik = useMemo(() => {
     const bugun = bugunIso();
     const aktif = rezervasyonlar.filter(
-      (r) => (r.durum === 'PLANLANDI' || r.durum === 'DEVAM_EDIYOR') && r.bitisTarihi >= bugun
+      (r) => (r.durum === 'BEKLEMEDE' || r.durum === 'ONAYLANDI') && r.bitisTarihi >= bugun
     ).length;
     const ayGun = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
     const oranlar = araclar.map((v) => {

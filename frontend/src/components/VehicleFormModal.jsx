@@ -4,14 +4,38 @@ import { useFleetData } from '../context/FleetDataContext';
 import { vehiclesApi } from '../api/vehicles';
 import { ApiError } from '../api/client';
 import { MARKALAR, YILLAR, markaModelAyristir, modelSecenekleriGetir } from '../domain/vehicleCatalog';
+import {
+  VEHICLE_STATUS_LABEL,
+  VEHICLE_CATEGORY_LABEL,
+  FUEL_TYPE_LABEL,
+  GEARBOX_LABEL,
+} from '../domain/constants';
 
-const BOS_FORM = { plaka: '', marka: '', model: '', yil: '', tur: 'BINEK', durum: 'AKTIF', fotoUrl: '' };
+const BOS_FORM = {
+  plaka: '', marka: '', model: '', yil: '', tur: 'BINEK', durum: 'MUSAIT', fotoUrl: '',
+  kategori: 'SEDAN', koltuk: 5, yakit: 'BENZIN', vites: 'MANUEL', km: '',
+  sehirTuketim: '', yolTuketim: '', menzil: '', kwh: '',
+};
 const MAX_FOTO_BYTE = 4 * 1024 * 1024;
 
 function formaCevir(arac) {
   if (!arac) return { ...BOS_FORM };
   const { marka, model } = markaModelAyristir(arac.markaModel);
-  return { ...BOS_FORM, ...arac, marka, model };
+  return {
+    ...BOS_FORM,
+    ...arac,
+    marka,
+    model,
+    kategori: arac.kategori || BOS_FORM.kategori,
+    koltuk: arac.koltuk ?? BOS_FORM.koltuk,
+    yakit: arac.yakit || BOS_FORM.yakit,
+    vites: arac.vites || BOS_FORM.vites,
+    km: arac.km ?? '',
+    sehirTuketim: arac.sehirTuketim ?? '',
+    yolTuketim: arac.yolTuketim ?? '',
+    menzil: arac.menzil ?? '',
+    kwh: arac.kwh ?? '',
+  };
 }
 
 export default function VehicleFormModal({ arac, onClose }) {
@@ -23,6 +47,17 @@ export default function VehicleFormModal({ arac, onClose }) {
   const alan = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const markaAlan = (e) => setForm((f) => ({ ...f, marka: e.target.value, model: '' }));
+
+  const yakitAlan = (e) => {
+    const yeni = e.target.value;
+    setForm((f) => ({
+      ...f,
+      yakit: yeni,
+      ...(yeni === 'ELEKTRIK'
+        ? { sehirTuketim: '', yolTuketim: '' }
+        : { menzil: '', kwh: '' }),
+    }));
+  };
 
   const modelSecenekleri = modelSecenekleriGetir(form.marka, form.model);
 
@@ -54,6 +89,15 @@ export default function VehicleFormModal({ arac, onClose }) {
       durum: form.durum,
       fotoUrl: form.fotoUrl || '',
       yil: form.yil ? Number(form.yil) : null,
+      kategori: form.kategori || null,
+      koltuk: form.koltuk !== '' && form.koltuk != null ? Number(form.koltuk) : null,
+      yakit: form.yakit || null,
+      vites: form.vites || null,
+      km: form.km !== '' ? Number(form.km) : null,
+      sehirTuketim: form.sehirTuketim !== '' ? Number(form.sehirTuketim) : null,
+      yolTuketim: form.yolTuketim !== '' ? Number(form.yolTuketim) : null,
+      menzil: form.menzil !== '' ? Number(form.menzil) : null,
+      kwh: form.kwh !== '' ? Number(form.kwh) : null,
     };
     try {
       if (arac) await vehiclesApi.update(arac.id, govde);
@@ -126,11 +170,89 @@ export default function VehicleFormModal({ arac, onClose }) {
           <div>
             <label className="field-label field-label-top">Durum</label>
             <select className="select-input select-block" value={form.durum} onChange={alan('durum')}>
-              <option value="AKTIF">Aktif</option>
-              <option value="BAKIMDA">Bakımda</option>
+              {Object.entries(VEHICLE_STATUS_LABEL).map(([deger, etiket]) => (
+                <option key={deger} value={deger}>{etiket}</option>
+              ))}
             </select>
           </div>
         </div>
+
+        <div className="form-grid-2">
+          <div>
+            <label className="field-label field-label-top">Kategori</label>
+            <select className="select-input select-block" value={form.kategori} onChange={alan('kategori')}>
+              {Object.entries(VEHICLE_CATEGORY_LABEL).map(([deger, etiket]) => (
+                <option key={deger} value={deger}>{etiket}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="field-label field-label-top">Koltuk sayısı</label>
+            <input
+              type="number"
+              min="1"
+              max="60"
+              className="text-input"
+              value={form.koltuk}
+              onChange={alan('koltuk')}
+            />
+          </div>
+        </div>
+
+        <div className="form-grid-2">
+          <div>
+            <label className="field-label field-label-top">Yakıt tipi</label>
+            <select className="select-input select-block" value={form.yakit} onChange={yakitAlan}>
+              {Object.entries(FUEL_TYPE_LABEL).map(([deger, etiket]) => (
+                <option key={deger} value={deger}>{etiket}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="field-label field-label-top">Vites</label>
+            <select className="select-input select-block" value={form.vites} onChange={alan('vites')}>
+              {Object.entries(GEARBOX_LABEL).map(([deger, etiket]) => (
+                <option key={deger} value={deger}>{etiket}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="form-grid-2">
+          <div>
+            <label className="field-label field-label-top">Kilometre</label>
+            <input type="number" min="0" className="text-input" value={form.km} onChange={alan('km')} />
+          </div>
+          {form.yakit === 'ELEKTRIK' ? (
+            <div>
+              <label className="field-label field-label-top">Menzil (km)</label>
+              <input type="number" min="0" className="text-input" value={form.menzil} onChange={alan('menzil')} />
+            </div>
+          ) : (
+            <div>
+              <label className="field-label field-label-top">Şehir içi (L/100 km)</label>
+              <input type="number" min="0" step="0.1" className="text-input" value={form.sehirTuketim} onChange={alan('sehirTuketim')} />
+            </div>
+          )}
+        </div>
+
+        {form.yakit === 'ELEKTRIK' ? (
+          <div className="form-grid-2">
+            <div>
+              <label className="field-label field-label-top">Ortalama tüketim (kWh/100 km)</label>
+              <input type="number" min="0" step="0.1" className="text-input" value={form.kwh} onChange={alan('kwh')} />
+            </div>
+            <div />
+          </div>
+        ) : (
+          <div className="form-grid-2">
+            <div>
+              <label className="field-label field-label-top">Uzun yol (L/100 km)</label>
+              <input type="number" min="0" step="0.1" className="text-input" value={form.yolTuketim} onChange={alan('yolTuketim')} />
+            </div>
+            <div />
+          </div>
+        )}
 
         <div className="photo-field">
           <div className="field-label">Araç fotoğrafı</div>

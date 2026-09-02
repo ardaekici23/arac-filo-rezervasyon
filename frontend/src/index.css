@@ -35,7 +35,7 @@ button, input, select, textarea { font-family: inherit; }
   border-bottom: 1px solid var(--border);
 }
 .app-header-inner {
-  max-width: 1240px; margin: 0 auto; padding: 0 28px; height: 68px;
+  max-width: 100%; margin: 0; padding: 0 32px 0 48px; height: 68px;
   display: flex; align-items: center; gap: 32px;
 }
 .brand { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; cursor: pointer; }
@@ -120,6 +120,7 @@ button, input, select, textarea { font-family: inherit; }
 /* Generic pages */
 .page { max-width: 1240px; margin: 0 auto; padding: 44px 28px 100px; }
 .page-narrow { max-width: 460px; padding-top: 72px; }
+.page-full { max-width: 100%; margin: 0; padding: 40px 32px 100px; }
 .page-title { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
 .page-subtitle { font-size: 14px; color: var(--muted); margin: 10px 0 0; }
 .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 28px; }
@@ -174,8 +175,35 @@ button, input, select, textarea { font-family: inherit; }
 .vehicle-title { font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
 .vehicle-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
 .vehicle-card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 14px; border-top: 1px solid #F0F1F4; }
+.vehicle-meta-row { display: flex; flex-direction: column; gap: 3px; margin-top: 10px; }
 .muted-note { font-size: 12px; color: var(--faint); }
 .link-strong { font-size: 13px; font-weight: 600; color: var(--accent); }
+
+/* Vehicle filter sidebar */
+.vehicles-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 24px; align-items: start; }
+.filter-sidebar {
+  position: sticky; top: 22px; background: #fff; border: 1px solid var(--border); border-radius: 16px;
+  padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 18px;
+}
+.filter-sidebar-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.filter-sidebar-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+.filter-clear-btn { border: 0; background: none; padding: 0; font-size: 12px; font-weight: 600; color: var(--accent); cursor: pointer; }
+.filter-clear-btn:hover { color: var(--ink); }
+.filter-section { display: flex; flex-direction: column; gap: 9px; }
+.filter-section-title { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--faint); }
+.filter-chip-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip-toggle {
+  padding: 7px 11px; border-radius: 999px; border: 1px solid #E0E2E8; background: #fff;
+  color: #4B5163; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
+}
+.chip-toggle:hover { border-color: var(--ink); color: var(--ink); }
+.chip-toggle-active { border-color: var(--ink); background: var(--ink); color: #fff; }
+.filter-daterange { display: flex; align-items: center; gap: 6px; }
+.filter-daterange .text-input { padding: 9px 8px; font-size: 12px; }
+.filter-quickrange { display: flex; flex-wrap: wrap; gap: 6px; }
+.filter-toggle-row { flex-direction: row; align-items: center; }
+.filter-toggle-row label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink); cursor: pointer; }
+.sort-select { font-size: 13px; padding: 9px 12px; }
 
 /* Modal */
 .modal-overlay {
@@ -317,6 +345,7 @@ button, input, select, textarea { font-family: inherit; }
   text-transform: uppercase; letter-spacing: 0.06em; padding: 14px 22px;
 }
 .admin-res-cols { grid-template-columns: 1fr 110px 1.1fr 60px 130px 210px; }
+.admin-vehicle-cols { grid-template-columns: 110px 1.5fr 90px 110px 120px 170px; }
 .row-actions { display: flex; gap: 8px; }
 .admin-vehicle-cell { display: flex; align-items: center; gap: 12px; }
 .admin-thumb {
@@ -342,4 +371,7 @@ button, input, select, textarea { font-family: inherit; }
   .kpi-grid { grid-template-columns: 1fr 1fr; }
   .table-row, .table-head { grid-template-columns: 1fr; gap: 4px; }
   .admin-res-cols { grid-template-columns: 1fr; }
+  .admin-vehicle-cols { grid-template-columns: 1fr; }
+  .vehicles-layout { grid-template-columns: 1fr; }
+  .filter-sidebar { position: static; }
 }
