@@ -1,10 +1,12 @@
 package com.aracfilo.vehicle;
 
+import com.aracfilo.common.BusinessRuleException;
 import com.aracfilo.common.NotFoundException;
 import com.aracfilo.reservation.ReservationRepository;
 import com.aracfilo.reservation.ReservationStatus;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,12 +38,16 @@ public class VehicleService {
     }
 
     public Vehicle create(Vehicle vehicle) {
+        vehicle.setPlaka(PlakaValidator.normalizeVeDogrula(vehicle.getPlaka()));
+        plakaBenzersizligineBak(vehicle.getPlaka(), null);
         return vehicleRepository.save(vehicle);
     }
 
     public Vehicle update(Long id, Vehicle changes) {
         Vehicle existing = findById(id);
-        existing.setPlaka(changes.getPlaka());
+        String yeniPlaka = PlakaValidator.normalizeVeDogrula(changes.getPlaka());
+        plakaBenzersizligineBak(yeniPlaka, id);
+        existing.setPlaka(yeniPlaka);
         existing.setMarkaModel(changes.getMarkaModel());
         existing.setTur(changes.getTur());
         existing.setDurum(changes.getDurum());
@@ -61,5 +67,12 @@ public class VehicleService {
 
     public void delete(Long id) {
         vehicleRepository.deleteById(id);
+    }
+
+    private void plakaBenzersizligineBak(String plaka, Long haricTutulacakId) {
+        Optional<Vehicle> mevcut = vehicleRepository.findByPlaka(plaka);
+        if (mevcut.isPresent() && !mevcut.get().getId().equals(haricTutulacakId)) {
+            throw new BusinessRuleException("Bu plakaya sahip bir araç zaten kayıtlı");
+        }
     }
 }

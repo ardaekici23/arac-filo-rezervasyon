@@ -36,6 +36,17 @@ public class ReservationService {
             throw new BusinessRuleException("Bu araç seçilen tarih aralığında zaten rezerve edilmiş");
         }
 
+        List<Reservation> kullaniciRezervasyonlari =
+                reservationRepository.findByKullaniciIdAndDurumNot(reservation.getKullaniciId(), ReservationStatus.IPTAL);
+
+        boolean kullaniciCakisiyor = kullaniciRezervasyonlari.stream()
+                .map(r -> new DateRange(r.getBaslangicTarihi(), r.getBitisTarihi()))
+                .anyMatch(yeniAralik::overlaps);
+
+        if (kullaniciCakisiyor) {
+            throw new BusinessRuleException("Bu kullanıcı seçilen tarih aralığında başka bir araç için rezervasyona sahip");
+        }
+
         return reservationRepository.save(reservation);
     }
 

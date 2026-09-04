@@ -38,6 +38,7 @@ public class ReservationController {
         Reservation reservation = new Reservation(
                 request.aracId(),
                 request.kullaniciAdi(),
+                request.kullaniciId(),
                 request.baslangicTarihi(),
                 request.bitisTarihi(),
                 request.amac(),
@@ -57,6 +58,7 @@ public class ReservationController {
                 reservation.getId(),
                 reservation.getAracId(),
                 reservation.getKullaniciAdi(),
+                reservation.getKullaniciId(),
                 reservation.getBaslangicTarihi(),
                 reservation.getBitisTarihi(),
                 reservation.getAmac(),

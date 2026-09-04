@@ -26,6 +26,9 @@ public class Reservation {
     @Column(name = "kullanici_adi", nullable = false)
     private String kullaniciAdi;
 
+    @Column(name = "kullanici_id")
+    private Long kullaniciId;
+
     @Column(name = "baslangic_tarihi", nullable = false)
     private LocalDate baslangicTarihi;
 
@@ -46,13 +49,14 @@ public class Reservation {
         // JPA
     }
 
-    public Reservation(Long aracId, String kullaniciAdi, LocalDate baslangicTarihi, LocalDate bitisTarihi,
+    public Reservation(Long aracId, String kullaniciAdi, Long kullaniciId, LocalDate baslangicTarihi, LocalDate bitisTarihi,
                         String amac, ReservationStatus durum, LocalDateTime olusturmaTarihi) {
         if (!bitisTarihi.isAfter(baslangicTarihi)) {
             throw new BusinessRuleException("Bitiş tarihi başlangıç tarihinden sonra olmalıdır");
         }
         this.aracId = aracId;
         this.kullaniciAdi = kullaniciAdi;
+        this.kullaniciId = kullaniciId;
         this.baslangicTarihi = baslangicTarihi;
         this.bitisTarihi = bitisTarihi;
         this.amac = amac;
@@ -70,6 +74,10 @@ public class Reservation {
 
     public String getKullaniciAdi() {
         return kullaniciAdi;
+    }
+
+    public Long getKullaniciId() {
+        return kullaniciId;
     }
 
     public LocalDate getBaslangicTarihi() {

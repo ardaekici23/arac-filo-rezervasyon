@@ -10,6 +10,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findByAracIdAndDurumNot(Long aracId, ReservationStatus durum);
 
+    List<Reservation> findByKullaniciIdAndDurumNot(Long kullaniciId, ReservationStatus durum);
+
     @Query("""
             SELECT DISTINCT r.aracId FROM Reservation r
             WHERE r.durum <> :haricDurum

@@ -58,6 +58,7 @@ export default function ReservationModal({ arac, onClose, onCreated }) {
     try {
       const kayit = await reservationsApi.create({
         aracId: arac.id,
+        kullaniciId: kullanici.id,
         kullaniciAdi: kullanici.ad,
         baslangicTarihi: secimBas,
         bitisTarihi: secimBit || secimBas,

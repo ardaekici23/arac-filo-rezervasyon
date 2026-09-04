@@ -7,6 +7,7 @@ public record ReservationResponse(
         Long id,
         Long aracId,
         String kullaniciAdi,
+        Long kullaniciId,
         LocalDate baslangicTarihi,
         LocalDate bitisTarihi,
         String amac,

@@ -17,6 +17,22 @@ const BOS_FORM = {
   sehirTuketim: '', yolTuketim: '', menzil: '', kwh: '',
 };
 const MAX_FOTO_BYTE = 4 * 1024 * 1024;
+const PLAKA_DESENI =
+  /^(0[1-9]|[1-7][0-9]|8[01])([ABCDEFGHIJKLMNOPRSTUVYZ]\d{4}|[ABCDEFGHIJKLMNOPRSTUVYZ]{2}\d{3,4}|[ABCDEFGHIJKLMNOPRSTUVYZ]{3}\d{2,3})$/;
+
+function plakaGecerliMi(plaka) {
+  const temiz = plaka
+    .replace(/[ıİi]/g, 'I')
+    .toUpperCase()
+    .replace(/[\s-]+/g, '');
+  const eslesme = temiz.match(PLAKA_DESENI);
+  if (!eslesme) return { gecerli: false, mesaj: 'Geçersiz plaka formatı.' };
+  const harfGrubu = eslesme[2].match(/^[A-Z]+/)[0];
+  if (harfGrubu.startsWith('T')) {
+    return { gecerli: false, mesaj: 'Taksi plakaları (T ile başlayan) şirket aracı olarak kaydedilemez.' };
+  }
+  return { gecerli: true };
+}
 
 function formaCevir(arac) {
   if (!arac) return { ...BOS_FORM };
@@ -79,6 +95,11 @@ export default function VehicleFormModal({ arac, onClose }) {
   const kaydet = async () => {
     if (!form.plaka.trim() || !form.marka || !form.model) {
       duyur('Plaka, marka ve model zorunlu.', 'hata');
+      return;
+    }
+    const plakaKontrol = plakaGecerliMi(form.plaka);
+    if (!plakaKontrol.gecerli) {
+      duyur(plakaKontrol.mesaj, 'hata');
       return;
     }
     setKaydediliyor(true);
